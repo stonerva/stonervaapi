@@ -2,9 +2,9 @@ import twilio from 'twilio'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const accountSid = process.env.TWILO_ACCOUNT_SID;
-const authTokenId = process.env.TWILO_AUTH_TOKEN;
-const phoneNum = process.env.TWILO_PHONE_NUMBER;
+const accountSid = process.env.TW_ACCOUNT_SID;
+const authTokenId = process.env.TW_AUTH_TOKEN;
+const phoneNum = process.env.TW_PHONE_NUMBER;
 
 const client =  twilio(accountSid,authTokenId);
 
