@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import fetchRoutes from './routes/userRoutes/userRoute.js'
 import productRoutes from './routes/userRoutes/productRoutes.js'
+import adminRoutes from './routes/adminRoutes/adminRoutes.js'
 // import fetchquesRoutes from './src/routes/question.routes.js'
 
 dotenv.config()
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 //Routes///
 app.use("/api/v1",fetchRoutes)
 app.use("/api/v1/product",productRoutes)
+app.use("/api/v1/admin",adminRoutes)
 
 
 export default app

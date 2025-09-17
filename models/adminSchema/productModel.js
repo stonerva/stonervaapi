@@ -15,7 +15,7 @@ const productsSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    descriptiom: {
+    description: {
         type: String,
         default: "",
     },
@@ -36,7 +36,7 @@ const productsSchema = new mongoose.Schema({
         required:true
     },
     thumbnail:{
-        type:String
+        type:Object
     },
     otherimages:{
         type:Array

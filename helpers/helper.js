@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import dotenv from 'dotenv'
 import User from '../models/userSchema/userModel.js'
 import Category from '../models/userSchema/categoryModel.js'
+import Product from '../models/adminSchema/productModel.js'
+import s3 from '../helpers/s3Fileupload.js'
 dotenv.config()
 
 const generateToken = (id) => {
@@ -23,10 +25,13 @@ const generateId = async (ids) => {
         lastId = await Category.findOne().sort({ _id: -1 });
         existingIds.push(lastId && lastId.catId ? lastId.catId : "");
     }
-
-
+    if (ids === "STVPD") {
+        idPrefix = "STVPD";
+        lastId = await Product.findOne().sort({ _id: -1 });
+        existingIds.push(lastId && lastId.productId ? lastId.productId : "");
+    }
     const maxNumericPart = existingIds.reduce((max, id) => {
-        if (!id || !id.startsWith(idPrefix)) return max; // Check if id is undefined or doesn't start with idPrefix
+        if (!id || !id.startsWith(idPrefix)) return max;
 
         const numericPart = parseInt(id.substring(idPrefix.length), 10);
         return numericPart > max ? numericPart : max;
@@ -56,8 +61,85 @@ const authMiddleware = async (req, res, next) => {
     if (!token) return res.status(401).json({ message: "No token, authorization denied" });
 };
 
+const handleChunkUpload = async (req, res) => {
+    let fileChunks = {}
+    try {
+        const { fileName, index, totalChunks, fieldType } = req.body;
+
+        const key = `${Date.now()}-${fileName}`;
+
+        if (!fileChunks[key]) fileChunks[key] = [];
+
+        fileChunks[key][index] = req.file.buffer;
+
+        if (
+            fileChunks[key].length == totalChunks &&
+            !fileChunks[key].includes(undefined)
+        ) {
+            const finalBuffer = Buffer.concat(fileChunks[key]);
+
+            const s3Res = await s3.upload({
+                Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
+                Key: key,
+                Body: finalBuffer,
+                ContentType: req.file.mimetype,
+            }).promise();
+
+            delete fileChunks[key];
+            return res.status(201).send({ url: s3Res.Key, fieldType });
+        }
+
+        return res.status(201).send({ uploaded: true });
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: "Upload Failed",
+            error: error.stack
+        });
+    }
+};
+const handleUpdateChunkUpload = async (req, res) => {
+    let fileChunks = {}
+    try {
+        const { index, totalChunks, fieldType } = req.body;
+        const {key} = req.query
+        if (!fileChunks[key]) fileChunks[key] = [];
+
+        fileChunks[key][index] = req.file.buffer;
+
+        if (
+            fileChunks[key].length == totalChunks &&
+            !fileChunks[key].includes(undefined)
+        ) {
+            const finalBuffer = Buffer.concat(fileChunks[key]);
+
+            const s3Res = await s3.upload({
+                Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
+                Key: key,
+                Body: finalBuffer,
+                ContentType: req.file.mimetype,
+            }).promise();
+
+            delete fileChunks[key];
+            return res.status(201).send({ url: s3Res.Key, fieldType ,message:"Image Updated"});
+        }
+
+        return res.status(201).send({ uploaded: true });
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: "Upload Failed",
+            error: error.stack
+        });
+    }
+};
+
+
+
 export {
     generateToken,
     generateId,
-    authMiddleware
+    authMiddleware,
+    handleChunkUpload,
+    handleUpdateChunkUpload
 }
