@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 
 const productsSchema = new mongoose.Schema({
-
     productId: {
         type: String,
         required: true

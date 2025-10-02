@@ -3,7 +3,6 @@ import { getProfile, singup, updateProfile, verifyOtp } from '../../controllers/
 import { authMiddleware } from '../../helpers/helper.js';
 const router = express.Router();
 
-
 router.post("/login", singup);
 router.post("/verify-otp", verifyOtp);
 router.get("/getprofile", authMiddleware, getProfile);
