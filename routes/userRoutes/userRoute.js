@@ -9,3 +9,4 @@ router.get("/getprofile", authMiddleware, getProfile);
 router.put("/updateprofile", updateProfile);
 
 export default router;
+
