@@ -217,5 +217,42 @@ const removeCart = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
 
-export { singup, verifyOtp, getProfile, addCart, getAllCartItems, removeCart }
+    const userId = req.query;
+    const {fname,lname,email} = req.body
+    try {
+        if(!userId){
+            return res.status(400).send({
+                success:false,
+                message:"Userid mising"
+            })
+        }
+        if(!fname || !lname || !email){
+            return res.status(400).send({
+                success:false,
+                message:"Mandatory fields are mising"
+            })
+        }
+
+        await User.updateOne({userId:userId},{$set:{
+            fname,lname,email
+        }})
+        return res.status(200).send({
+            success:true,
+            message:"User updates"
+        })
+
+
+    } catch (error) {
+        return res.status(500).send({
+            message: "Internal server error",
+            success: false,
+            error: error.stack
+        })
+    }
+
+
+}
+
+export { singup, verifyOtp, getProfile, addCart, getAllCartItems, removeCart ,updateProfile}
