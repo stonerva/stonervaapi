@@ -61,15 +61,13 @@ const authMiddleware = async (req, res, next) => {
     if (!token) return res.status(401).json({ message: "No token, authorization denied" });
 };
 
+let fileChunks = {}
 const handleChunkUpload = async (req, res) => {
-    let fileChunks = {}
     try {
         const { fileName, index, totalChunks, fieldType } = req.body;
-
-        const key = `${Date.now()}-${fileName}`;
+        const key = `${fileName}`;
 
         if (!fileChunks[key]) fileChunks[key] = [];
-
         fileChunks[key][index] = req.file.buffer;
 
         if (
@@ -84,7 +82,7 @@ const handleChunkUpload = async (req, res) => {
                 Body: finalBuffer,
                 ContentType: req.file.mimetype,
             }).promise();
-
+            
             delete fileChunks[key];
             return res.status(201).send({ url: s3Res.Key, fieldType });
         }
