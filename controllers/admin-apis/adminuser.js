@@ -89,7 +89,7 @@ const generateOTP = () =>
 const sendOTPEmail = async (email, otp) => {
   try {
     await resend.emails.send({
-      from: "noreply@stonerva.com",
+      from: process.env.RESEND_EMAIL,
       to: email,
       subject: "One Time Password (OTP) for your account verification",
       html: `
@@ -113,7 +113,7 @@ const sendOTPEmail = async (email, otp) => {
                 This OTP will expire in 5 minutes.
               </p>
               <p style="margin-top: 40px; font-size: 14px; color: #333333;">
-                <strong style="color: #6a1b9a;">Team Fimon</strong>
+                <strong style="color: #6a1b9a;">Stonerva</strong>
               </p>
             </td>
           </tr>
