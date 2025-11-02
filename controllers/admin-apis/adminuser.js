@@ -219,6 +219,7 @@ const loginAdminUser = async (req, res) => {
 const registerAdminUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    console.log(req.body)
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required." });
@@ -234,7 +235,7 @@ const registerAdminUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      currentUser: name,
+      name: name,
       email,
       password: hashedPassword,
     });

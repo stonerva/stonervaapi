@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const childUserSchema = new mongoose.Schema({
-  currentUser: {
+  name: {
     type: String,
   },
   email: {
@@ -44,8 +44,8 @@ const userSchema = new mongoose.Schema({
     },
     default: [
       {
-        name: "Demo User 1",
-        email: "demo1@example.com",
+        name: "Souvick Chakraborty",
+        email: "souvickss.721@gmail.com",
       },
     ],
   },
